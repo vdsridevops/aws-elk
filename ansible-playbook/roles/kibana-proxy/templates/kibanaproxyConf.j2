@@ -1,0 +1,11 @@
+server {
+listen 0.0.0.0:80;
+
+server_name localhost;
+access_log /var/log/nginx/localhost.log;
+
+location / {
+    proxy_pass http://localhost:5601;
+    proxy_read_timeout 90;
+ }
+}

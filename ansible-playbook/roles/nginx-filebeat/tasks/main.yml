@@ -1,0 +1,33 @@
+---
+########################################################
+# Prepare to setup filebeat for nginx
+########################################################
+
+- name: "Install and enable filebeat module"
+  shell: "{{ item }}" 
+  with_items:
+    - curl -L -O https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-6.8.8-amd64.deb
+    - sudo dpkg -i filebeat-6.8.8-amd64.deb
+    - filebeat modules enable nginx
+  args:
+    warn: no
+
+- name: "Copy filebeat config"
+  template:
+    src: filebeatConf.j2
+    dest: /etc/filebeat/filebeat.yml
+
+- name: "Copy filebeat config for nginx module"
+  template:
+    src: nginxConf.j2
+    dest: /etc/filebeat/modules.d/nginx.yml
+
+- name: "Enable filebeat.service"
+  systemd:
+    name: filebeat.service
+    enabled: yes
+
+- name: "start filebeat.service"
+  service:
+    name: filebeat.service
+    state: started

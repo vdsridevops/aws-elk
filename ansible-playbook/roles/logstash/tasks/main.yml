@@ -1,0 +1,32 @@
+---
+########################################################
+# Set up Logstash
+########################################################
+
+- name: "Install Logstash from APT repository"
+  apt: 
+    name: logstash 
+    state: present 
+    force: true 
+    update_cache: yes
+
+- name: "Copy logstash config for nginx"
+  template: 
+    src: logstash-nginxConf.j2 
+    dest: /etc/logstash/conf.d/nginx.conf
+
+# Requires Ansible 2.4 and above
+- name: "Force systemd to reread configs"
+  systemd: 
+    daemon_reload: yes
+
+- name: "Enable logstash.service"
+  systemd:
+    name: logstash.service
+    enabled: yes
+
+- name: "Start logstash.service"
+  systemd: 
+    name: logstash.service 
+    state: restarted
+  become: true

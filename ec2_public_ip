@@ -1,0 +1,8 @@
+[elkmaster]
+${elk-master-ip}
+
+[elkdata]
+${elk-data-ip}
+
+[nginx]
+${nginx-ip}

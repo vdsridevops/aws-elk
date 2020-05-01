@@ -1,0 +1,24 @@
+---
+########################################################
+# ElasticSearch Master post installation task
+########################################################
+
+- name: "Setup dashboard in Kibana for filebeat and metricbeat"
+  shell: "{{ item }}"
+  with_items:
+    - filebeat setup
+    - metricbeat setup
+  args:
+    warn: no
+
+- name: "Restart filebeat.service"
+  become: true
+  systemd: 
+    name: filebeat.service 
+    state: restarted
+
+- name: "Restart metricbeat.service"
+  become: true
+  systemd:
+    name: metricbeat.service
+    state: restarted

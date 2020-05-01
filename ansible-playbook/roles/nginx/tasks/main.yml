@@ -1,0 +1,20 @@
+---
+########################################################
+# Prepare to setup nginx
+########################################################
+
+- name: "Install nginx"
+  apt:
+    name: nginx
+    state: present
+
+- name: "Enable nginx.service"
+  systemd:
+    name: nginx.service
+    enabled: yes
+
+- name: "start nginx.service"
+  service:
+    name: nginx
+    state: started
+

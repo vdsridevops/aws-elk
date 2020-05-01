@@ -1,0 +1,1 @@
+elk_master_private_ip: ${elk-master-private-ip}

@@ -1,0 +1,26 @@
+---
+########################################################
+# Setup Kibana proxy on nginx
+########################################################
+
+- name: "Copy kibana proxy config"
+  template:
+    src: kibanaproxyConf.j2
+    dest: /etc/nginx/sites-available/kibana
+
+- name: "Create a link in sites-enabled"
+  file:
+    src: /etc/nginx/sites-available/kibana
+    dest: /etc/nginx/sites-enabled/kibana
+    state: link
+
+- name: "Remove default site"
+  file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+
+- name: "start nginx.service"
+  service:
+    name: nginx
+    state: restarted
+

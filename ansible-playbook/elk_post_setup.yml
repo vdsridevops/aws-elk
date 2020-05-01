@@ -1,0 +1,15 @@
+---
+# This playbook is for setting up elastic stack post setup
+# sudo ansible-playbook -i hosts elk_post_setup.yml
+
+
+- hosts: elkmaster
+  gather_facts: no
+  remote_user: ubuntu
+  become: yes
+  become_user: root
+  vars_files:
+    - /test-terraform/aws1/ansible-playbook/group_vars/env_variables
+  
+  roles:
+     - role: elk-post

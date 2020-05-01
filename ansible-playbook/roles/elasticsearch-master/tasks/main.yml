@@ -1,0 +1,92 @@
+---
+########################################################
+# Setup ElasticSearch Master with beats
+########################################################
+
+- name: "Copy elasticsearch config"
+  template: 
+    src: elasticsearchConf.j2 
+    dest: /etc/elasticsearch/elasticsearch.yml
+
+- name: "Enable elasticsearch.service"
+  systemd:
+    name: elasticsearch.service
+    enabled: yes
+
+- name: "Start elasticsearch.service"
+  become: true
+  systemd: 
+    name: elasticsearch.service 
+    state: restarted
+
+- name: "Install and enable filebeat module"
+  shell: "{{ item }}"
+  with_items:
+    - curl -L -O https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-6.8.8-amd64.deb
+    - sudo dpkg -i filebeat-6.8.8-amd64.deb
+  args:
+    warn: no
+
+- name: "Copy filebeat config"
+  template:
+    src: filebeatConf.j2
+    dest: /etc/filebeat/filebeat.yml
+
+- name: "Copy filebeat elasticsearch module config"
+  template:
+    src: filebeat-elasticsearchConf.j2
+    dest: /etc/filebeat/modules.d/elasticsearch.yml.disabled
+
+- name: "Copy filebeat logstash module config"
+  template:
+    src: filebeat-logstashConf.j2
+    dest: /etc/filebeat/modules.d/logstash.yml.disabled
+
+- name: "Copy filebeat kibana module config"
+  template:
+    src: filebeat-kibanaConf.j2
+    dest: /etc/filebeat/modules.d/kibana.yml.disabled
+
+- name: "Enable filebeat module"
+  shell: "{{ item }}"
+  with_items:
+    - filebeat modules enable elasticsearch
+    - filebeat modules enable kibana
+    - filebeat modules enable logstash
+
+- name: "Enable filebeat.service"
+  systemd:
+    name: filebeat.service
+    enabled: yes
+
+- name: "start filebeat.service"
+  service:
+    name: filebeat.service
+    state: started
+
+- name: "Install and enable metricbeat module"
+  shell: "{{ item }}"
+  with_items:
+    - curl -L -O https://artifacts.elastic.co/downloads/beats/metricbeat/metricbeat-6.8.8-amd64.deb
+    - sudo dpkg -i metricbeat-6.8.8-amd64.deb
+    - metricbeat modules enable elasticsearch
+    - metricbeat modules enable logstash
+    - metricbeat modules enable kibana
+  args:
+    warn: no
+
+- name: "Copy metricbeat config"
+  template:
+    src: metricbeatConf.j2
+    dest: /etc/metricbeat/metricbeat.yml
+
+
+- name: "Enable metricbeat.service"
+  systemd:
+    name: metricbeat.service
+    enabled: yes
+
+- name: "start metricbeat.service"
+  service:
+    name: metricbeat.service
+    state: started

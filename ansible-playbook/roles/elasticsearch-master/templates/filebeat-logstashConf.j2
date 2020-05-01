@@ -1,0 +1,16 @@
+- module: logstash
+  # logs
+  log:
+    enabled: true
+    var.paths: 
+      - /var/log/logstash-plan.log*
+    var.format: json
+    var.convert_timezone: true
+
+  # Slow logs
+  slowlog:
+    enabled: true
+    var.paths: 
+      - /var/log/logstash-slowlog.log*
+    var.format: json
+    var.convert_timezone: true
